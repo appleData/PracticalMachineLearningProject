@@ -1,0 +1,101 @@
+##SYNOPSIS
+The goal of your project is to predict the manner in which six participants who participated in a dumbbell lifting exercise five different ways. The five ways, as described in the study are exactly according to the specification - Class A, throwing the elbows to the front - Class B, lifting the dumbbell only halfway - Class C, lowering the dumbbell only halfway - Class D and throwing the hips to the front - Class E. Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.
+
+By processing data gathered from accelerometers on the belt, forearm, arm, and dumbbell of the participants in a machine learning algorithm we will try to answer the question - can the appropriate activity quality of exercise which is a variable "classe" in training data set(class A-E) be predicted? We will use other variables in data to make the prediction.
+
+##Exploratory Data Analysis
+Load required libraries.
+```{r echo=FALSE, results='hide',message=FALSE}
+options(warn=-1)
+```
+```{r}
+#Load library
+```{r, message=F, warning=F}
+library(caret)
+```
+```{r}
+library(knitr)
+#Set seed
+ set.seed(12895)
+```
+```{r echo=FALSE, results='hide',message=FALSE}
+options(warn=-0)
+```
+Load Training and Test data downloaded.
+```{r}
+ train <- read.csv("C:/Users/home/Documents/pml-training.csv", stringsAsFactors=FALSE)
+ test <- read.csv("C:/Users/home/Documents/pml-testing.csv", stringsAsFactors=FALSE)
+```
+To prepare data eliminated both NA columns and other extraneous columns.
+```{r}
+filterData <- function(df) {
+  # Since we have lots of variables, remove any with NA's
+  # or have empty strings
+  dx.keep <- !sapply(df, function(x) any(is.na(x)))
+  df <- df[, dx.keep]
+  dx.keep <- !sapply(df, function(x) any(x==""))
+  df <- df[, dx.keep]
+
+  # Remove the columns that aren't the predictor variables
+  col.rm <- c("X", "user_name", "raw_timestamp_part_1", "raw_timestamp_part_2", 
+              "cvtd_timestamp", "new_window", "num_window")
+  dx.rm <- which(colnames(df) %in% col.rm)
+  df <- df[, -dx.rm]
+
+  return(df)
+}
+```
+Applying filter function built for preparing data.
+```{r}
+ train <- filterData(train)
+ train$classe <- factor(train$classe)
+
+ test <- filterData(test)
+```
+##Cross Validation and Modelling
+Strategy for making model is to make two models Random Forest and SVM-radial kernel and then compare the two using voting mechanism for the classe predictions
+
+There is no variable variance so there's no need to eliminate any covariates due to lack of variability.
+```{r}
+# Creating prediction models on the training data
+# Utilizing cross validation with trainControl to help optimize
+# the model parameters we use 5-fold cross validation
+cvCtrl <- trainControl(method = "cv", number = 5, verboseIter = TRUE)
+```
+```{r, message=F, warning=F,results='hide'}
+#Making the two model.
+ modelRF <- train(classe ~ ., data = train, method = "rf", trControl = cvCtrl)
+ modelSVM <- train(classe ~ ., data = train, method = "svmRadial", trControl = cvCtrl)
+```
+Investigating the cross-validation performance accuracy for the two models.
+```{r}
+# Make a data frame with the maximum accuracy values from the models obtained
+# via the cross validation on the training data
+ accuracy <- data.frame(Model=c("Random Forest", "SVM (radial)"),
+        Accuracy=c(round(max(head(modelRF$results)$Accuracy), 3),
+            round(max(head(modelSVM$results)$Accuracy), 3)))
+  kable(accuracy)
+```
+From the table above the Random Forest model appears to have the higher cross-validation accuracy compare to SVM.
+
+##Prediction
+Here we do predictions on test data using the 2 models and look for concordance in the classifications.
+```{r}
+# Predictions with test data
+  testPredictionRF <- predict(modelRF, test)
+  testPredictionSVM <- predict(modelSVM,test)
+  
+# compare prediction of two models
+  pred <- data.frame(rfPred = testPredictionRF, svmPred = testPredictionSVM)
+  pred$agree <- with(pred, rfPred == svmPred)
+  bothAgree <- all(pred$agree)
+```
+Comparing results of two models.
+```{r}
+  colnames(pred) <- c("Random Forest", "SVM", "Agreement?")
+  kable(pred)
+```
+
+##Conclusion
+It appears that we achieved high accuracy from the cross-validation procedure and predictions from the two models indicates that we have good prediction models.
+Results for the model are submitted and are all correct.
