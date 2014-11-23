@@ -54,8 +54,8 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="synopsis" class="section level2">
 <h2>SYNOPSIS</h2>
-<p>The goal of your project is to predict the manner in which six participants who participated in a dumbbell lifting exercise five different ways. The five ways, as described in the study are exactly according to the specification - Class A, throwing the elbows to the front - Class B, lifting the dumbbell only halfway - Class C, lowering the dumbbell only halfway - Class D and throwing the hips to the front - Class E. Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.</p>
-<p>By processing data gathered from accelerometers on the belt, forearm, arm, and dumbbell of the participants in a machine learning algorithm we will try to answer the question - can the appropriate activity quality of exercise which is a variable “classe” in training data set(class A-E) be predicted? We will use other variables in data to make the prediction.</p>
+<p>We are provided data for six participants who participated in a dumbbell lifting exercise five different ways. The five ways are Class A-Exactly according to the specification, Class B-Throwing the elbows to the front, Class C-Lifting the dumbbell only halfway, Class D-lowering the dumbbell only halfway and Class E-throwing the hips to the front. Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes.</p>
+<p>By processing data gathered from accelerometers on the belt, forearm, arm, and dumbbell of the participants in a machine learning algorithm we will try to answer the question - what was the quality of exercise which is a variable “classe” in training data set, class A to E will be predicted? We will utilize other variables in data to make the prediction.</p>
 </div>
 <div id="exploratory-data-analysis" class="section level2">
 <h2>Exploratory Data Analysis</h2>
@@ -158,7 +158,7 @@ cvCtrl &lt;- trainControl(method = &quot;cv&quot;, number = 5, verboseIter = TRU
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>It appears that we achieved high accuracy from the cross-validation procedure and predictions from the two models indicates that we have good prediction models. Results for the model are submitted and are all correct.</p>
+<p>It appears that we achieved high accuracy from the cross-validation procedure and predictions from the two models. Results from the model are submitted and are all correct. The results shows that we have good prediction results from both models.</p>
 </div>
 
 
